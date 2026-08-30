@@ -1,1 +1,1 @@
-# arabic-AI-text-Dectation
+# arabic-AI-text-Dectetion
