@@ -1,5 +1,6 @@
 # arabic-AI-text-Dectetion
 MSIS 822
+student: samar alharbi
 Final project
 Detecting of  AI-generated Arabic text
 Datasets used:
