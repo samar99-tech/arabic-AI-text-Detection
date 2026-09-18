@@ -29,16 +29,9 @@ def reshape_data (ds):
         })
   return pd.DataFrame(rows)
 
-def clean_data(df):
-  return df.drop_duplicates(subset=["text", "label"]).reset_index(drop=True)
-
-
 ds = load_data()
 df = reshape_data(ds)
-df_clean = clean_data(df)
-
-df_clean.to_csv("data_clean.csv", index = False, encoding="utf-8-sig")
-print ("raw: ", df.shape, "clean: ", df_clean.shape)
+print ("raw: ", df.shape)
  
 
  
