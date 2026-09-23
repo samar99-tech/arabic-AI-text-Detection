@@ -19,4 +19,4 @@ one row = one abstract(41941 rows)
 | text | text | the arabic abstract |
 | label | int | 0 = human, 1 = AI-generated |
 | source | category | human, allam, jais, llama, or openai |
-| split | category | by_polishing, from_title, from_title_and_content |
+
