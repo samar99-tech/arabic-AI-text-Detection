@@ -1,4 +1,4 @@
-import matplotlib as plt
+import matplotlib.pyplot as plt
 def plot_class_distribution(df):
   df["label"].value_counts().plot(kind="bar")
   plt.title("Human: 0 vs AI: 1")
