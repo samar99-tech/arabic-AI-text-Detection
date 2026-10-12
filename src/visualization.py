@@ -13,7 +13,7 @@ def plot_class_distribution(df):
   plt.show()
 
 #phase 2: text statistcs
-def plot_statistics(df):
+def plot_statistics(summary):
   summary[["count_words", "average_sentence_length"]].plot(kind="bar", color=["skyblue","red"])
   plt.title("Human vs AI: text statistics")
   plt.xticks(rotation=0)
@@ -31,7 +31,7 @@ def plot_length_distribution(df):
 #word clouds:
 reshaper = arabic_reshaper.ArabicReshaper(configuration={"support_ligatures": False})
 
-def make_cloud(text, title, font_path="Amiri-Regular.tiff"):
+def make_cloud(texts, title, font_path="Amiri-Regular.tff"):
   words = " ".join(texts).split()
   freq = Counter(words)
 
