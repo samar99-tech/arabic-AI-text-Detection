@@ -78,7 +78,7 @@ def preprocess(df):
 def count_words(t):
   return len(t.split())
 
-def average_word_length():
+def average_word_length(t):
   words = t.split()
   if len(words) == 0:
     return 0
@@ -88,7 +88,7 @@ def average_word_length():
   return total /len(words)
 
 def average_sentence_length(t):
-  sentences = t.replace("،",".").replace("!",".").replace("؟",".").split(".")
+  sentences = t.replace("!",".").replace("؟",".").split(".")
   sentences = [s for s in sentences if s.strip()]
   if len(sentences) == 0:
     return 0
@@ -109,6 +109,7 @@ def add_statistics(df):
   df["average_word_length"] = df["text"].apply(average_word_length) #average number of letters: is the word long or short
   df["average_sentence_length"] = df["text"].apply(average_sentence_length)# average number of words: is the sentnce long or short
   df["type_token_ratio"] = df["text"].apply(type_token_ratio)
+  return df
 
 
 
