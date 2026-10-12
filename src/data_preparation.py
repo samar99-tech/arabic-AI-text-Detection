@@ -67,8 +67,8 @@ def stem_text(t):
 
 def preprocess(df):
   stop_set = bulid_stopwords(t)
-  df["text_no_taskeel"] = df["text"].apply(araby.strip_tashkeel)
-  df["text_normalized"] = df["text_no_taskeel"].apply(normalize)
+  df["text_no_tashkeel"] = df["text"].apply(araby.strip_tashkeel)
+  df["text_normalized"] = df["text_no_tashkeel"].apply(normalize)
   df["text_no_stopwords"] = df["text_normalized"].apply(lambda t: remove_stopwords(t, stop_set))
   df["text_stemmed"] = df["text_no_stopwords"].apply(stem_text)
   return df
