@@ -111,8 +111,17 @@ def add_statistics(df):
   df["type_token_ratio"] = df["text"].apply(type_token_ratio)
   return df
 
-
-
+if __name__ == "__main__":
+  ds = load_data()
+  df = reshape_data(ds)
+  print("raw: ", df.shape)
+  check_quality(df)
+  df = remove_duplicate(df)
+  print("after removing duplicates: ", df.shape)
+  df = preprocess(df)
+  add_statistics(df)
+  print(df.groupby("label")[["count_words" , "average_word_length", "average_sentence_length" , "type_token_ratio"]].mean().round(3))
+  
 
 
 
