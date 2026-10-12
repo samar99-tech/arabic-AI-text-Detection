@@ -43,7 +43,7 @@ def remove_duplicate(df):
   return df[~mask].reset_index(drop=True)
   
 def normalize(t):
-    t = araby.strip_tatweel(t)
+  t = araby.strip_tatweel(t)
   t = re.sub(r"[اآإأ]", "ا" ,t) #الالف
   t = re.sub(r"ى", "ي",t) #الف مقصورة
   t = re.sub(r"ؤ", "و" ,t) # واو همزة
@@ -54,22 +54,22 @@ def normalize(t):
 
 def bulid_stopwords(t):
   nltk_stop = set(normalize(w) for w in stopwords.words("arabic"))
-  as_stop = set(normalize(w) for w in ast.stopwords_list())
+  ast_stop = set(normalize(w) for w in ast.stopwords_list())
   return nltk_stop | ast_stop
 
 def remove_stopwords(t, stop_set):
-  return "".join([w for w in t.split() ifw not in stop_set])
+  return " ".join([w for w in t.split() if w not in stop_set])
   
-ISRIStemmer = stemmer()
+stemmer = ISRIStemmer()
 
 def stem_text(t):
-  return "".join([stemmer.stem(w) for w in tsplit()])
+  return " ".join([stemmer.stem(w) for w in tsplit()])
 
 def preprocess(df):
-  stop_set = build_stopwords()
+  stop_set = bulid_stopwords(t)
   df["text_no_taskeel"] = df["text"].apply(araby.strip_tashkeel)
   df["text_normalized"] = df["text_no_taskeel"].apply(normalize)
-  df["text_no_stopwords"] = df["text_normalized"].apply(lambada t: remove_stopwords(t, stop_set))
+  df["text_no_stopwords"] = df["text_normalized"].apply(lambda t: remove_stopwords(t, stop_set))
   df["text_stemmed"] = df["text_no_stopwords"].apply(stem_text)
   return df
   
