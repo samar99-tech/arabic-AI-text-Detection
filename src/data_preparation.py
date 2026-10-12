@@ -110,7 +110,12 @@ def add_statistics(df):
   df["average_sentence_length"] = df["text"].apply(average_sentence_length)# average number of words: is the sentnce long or short
   df["type_token_ratio"] = df["text"].apply(type_token_ratio)
   return df
-
+  
+def get_summary(df):
+  summary = df.groupby("label")[["count_words" , "average_word_length", "average_sentence_length" , "type_token_ratio"]].mean()
+  summary.index = ["Human (0)", "A)-henrated (1)"]
+  return summar
+                  
 if __name__ == "__main__":
   ds = load_data()
   df = reshape_data(ds)
@@ -120,7 +125,7 @@ if __name__ == "__main__":
   print("after removing duplicates: ", df.shape)
   df = preprocess(df)
   add_statistics(df)
-  print(df.groupby("label")[["count_words" , "average_word_length", "average_sentence_length" , "type_token_ratio"]].mean().round(3))
+  print(get_summary(df).round(3))
   
 
 
