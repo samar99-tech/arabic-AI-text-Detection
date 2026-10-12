@@ -38,6 +38,7 @@ def check_quality(df):
   print(pd.crosstab(df["source"], df["label"]))
   return df
   
+#phase 2: preprocessing
 def remove_duplicate(df):
   mask = df.duplicated(subset=["text"], keep=False)
   return df[~mask].reset_index(drop=True)
@@ -72,7 +73,44 @@ def preprocess(df):
   df["text_no_stopwords"] = df["text_normalized"].apply(lambda t: remove_stopwords(t, stop_set))
   df["text_stemmed"] = df["text_no_stopwords"].apply(stem_text)
   return df
-  
+# statistics
+
+def count_words(t):
+  return len(t.split())
+
+def average_word_length():
+  words = t.split()
+  if len(words) == 0:
+    return 0
+  total = 0
+  for w in words:
+    total = total + len(w)
+  return total /len(words)
+
+def average_sentence_length(t):
+  sentences = t.replace("،",".").replace("!",".").replace("؟",".").split(".")
+  sentences = [s for s in sentences if s.strip()]
+  if len(sentences) == 0:
+    return 0
+  total = 0
+  for s in sentences:
+    total = total +len(s.split())
+  return total / len(sentences)
+
+def type_token_ratio(t):
+  words = t.split()
+  if  len(words) == 0:
+    return 0
+  unique_words = set(words)
+  return len(unique_words) / len(words)
+
+def add_statistics(df):
+  df["count_words"] = df["text"].apply(count_words) # number of words
+  df["average_word_length"] = df["text"].apply(average_word_length) #average number of letters: is the word long or short
+  df["average_sentence_length"] = df["text"].apply(average_sentence_length)# average number of words: is the sentnce long or short
+  df["type_token_ratio"] = df["text"].apply(type_token_ratio)
+
+
 
 
 
