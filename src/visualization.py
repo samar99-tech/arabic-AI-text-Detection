@@ -4,7 +4,7 @@ from wordcloud import WordCloud
 import arabic_reshaper
 from bidi.algorithm import get_display
 
-#phase 1:
+#phase 1: class destribution
 def plot_class_distribution(df):
   df["label"].value_counts().plot(kind="bar")
   plt.title("Human: 0 vs AI: 1")
@@ -12,7 +12,7 @@ def plot_class_distribution(df):
   plt.ylabel("count")
   plt.show()
 
-#phase 2:
+#phase 2: text statistcs
 def plot_statistics(df):
   summary[["count_words", "average_sentence_length"]].plot(kind="bar", color=["skyblue","red"])
   plt.title("Human vs AI: text statistics")
@@ -27,3 +27,30 @@ def plot_length_distribution(df):
   plt.xlabel("word count")
   plt.legend()
   plt.show()
+
+#word clouds:
+reshaper = arabic_reshaper.ArabicReshaper(configuration={"support_ligatures": False})
+
+def make_cloud(text, title, font_path="Amiri-Regular.tiff"):
+  words = " ".join(texts).split()
+  freq = Counter(words)
+
+  freq_display= {
+     get_display(reshaper.reshape(w))[::-1]: c
+     for w, c in freq.items()
+      }
+
+  wc = WordCloud(font_path=font_path, width=1200, height=700, margin=15,
+                 max_font_size=90, min_font_size=10, collocations= False,
+                 background_color="white").generate_from_frequencies(freq_display)
+
+  plt.figure(figsize=(14,8))
+  plt.imshow(wc, interpolation="bilinear")
+  plt.axis("off")
+  plt.title(title)
+  plt.savefig(
+      title.replace(" ","_") + ".png",
+      dpi=150, bbox_inches="tight", pad_inches=0.2)
+  plt.show()
+
+
