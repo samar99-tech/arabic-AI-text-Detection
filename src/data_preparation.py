@@ -113,8 +113,8 @@ def add_statistics(df):
   
 def get_summary(df):
   summary = df.groupby("label")[["count_words" , "average_word_length", "average_sentence_length" , "type_token_ratio"]].mean()
-  summary.index = ["Human (0)", "A)-henrated (1)"]
-  return summar
+  summary.index = ["Human (0)", "A)-generated (1)"]
+  return summary
                   
 if __name__ == "__main__":
   ds = load_data()
@@ -124,7 +124,7 @@ if __name__ == "__main__":
   df = remove_duplicate(df)
   print("after removing duplicates: ", df.shape)
   df = preprocess(df)
-  add_statistics(df)
+  df = add_statistics(df)
   print(get_summary(df).round(3))
   
 
