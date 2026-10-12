@@ -113,9 +113,18 @@ def add_statistics(df):
   
 def get_summary(df):
   summary = df.groupby("label")[["count_words" , "average_word_length", "average_sentence_length" , "type_token_ratio"]].mean()
-  summary.index = ["Human (0)", "A)-generated (1)"]
+  summary.index = ["Human (0)", "AI-generated (1)"]
   return summary
-                  
+  
+def top_ngrams(texts , n=2, top=10):
+  counts = Counter()
+  for t in texts:
+    words = t.split()
+    for i in range(len(words) - n +1):
+      counts[" ".join(words[i:i+n])] +=1
+  return counts.most_common(top)   
+
+                                                  
 if __name__ == "__main__":
   ds = load_data()
   df = reshape_data(ds)
@@ -126,6 +135,7 @@ if __name__ == "__main__":
   df = preprocess(df)
   df = add_statistics(df)
   print(get_summary(df).round(3))
+  print(top_ngrams(df[df["label"] == 1]["text_no_stopwords"],2,10))
   
 
 
