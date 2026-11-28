@@ -5,7 +5,9 @@ from pyarabic import araby
 from nltk.corpus import stopwords
 from nltk.stem.isri import ISRIStemmer
 import arabicstopwords.arabicstopwords as ast
-
+import numpy as np
+from sklearn.model_selection import train_test_split
+from collections import Counter
 
 def load_data():
   ds = load_dataset("KFUPM-JRCAI/arabic-generated-abstracts")
@@ -124,6 +126,78 @@ def top_ngrams(texts , n=2, top=10):
       counts[" ".join(words[i:i+n])] +=1
   return counts.most_common(top)   
 
+# f13:
+def hapax_ratio(t):
+    words = str(t).split()
+    if len(words) == 0:
+        return 0
+    counts = Counter(words)
+    hapax = 0
+    for w in counts:
+        if counts[w] == 1:
+            hapax = hapax + 1
+    return hapax / len(words)
+
+# f35:
+def count_paragraphs(t):
+    lines = str(t).split("\n")
+    paragraphs = [p for p in lines if p.strip() != ""]
+    return len(paragraphs)
+
+# f57: 
+def load_language_model(name="aubmindlab/aragpt2-base"):
+    import torch
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    tok = AutoTokenizer.from_pretrained(name)
+    model = AutoModelForCausalLM.from_pretrained(name).to(device).eval()
+    return tok, model, device
+
+def top50_count(t, tok, model, device):
+    import torch
+    ids = tok(str(t), return_tensors="pt", truncation=True, max_length=512).input_ids.to(device)
+    if ids.shape[1] < 2:
+        return 0
+    with torch.no_grad():
+        scores = model(ids).logits[0, :-1]
+    real = ids[0, 1:]
+    real_scores = scores.gather(1, real.unsqueeze(1))
+    ranks = (scores > real_scores).sum(1)
+    return int((ranks < 50).sum())
+
+# f79:
+def split_sentences(t):
+    t = str(t).replace("!", ".").replace("؟", ".").replace("?", ".")
+    return [s for s in t.split(".") if s.strip() != ""]
+
+def burstiness(t):
+    lengths = [len(s.split()) for s in split_sentences(t)]
+    if len(lengths) < 2:
+        return 0
+    return np.std(lengths) / np.mean(lengths)
+
+# 
+def diacritic_ratio(t):
+    t = str(t)
+    if len(t) == 0:
+        return 0
+    diacritized = len(re.findall(r"[\u0621-\u064A][\u064B-\u0652]", t))
+    return diacritized / len(t)
+
+def add_features(df):
+    df["f13_hapax"] = df["text_normalized"].apply(hapax_ratio)
+    df["f35_paragraphs"] = df["text"].apply(count_paragraphs)
+    tok, model, device = load_language_model()
+    df["f57_count"] = df["text"].apply(lambda t: top50_count(t, tok, model, device))
+    df["f79_burstiness"] = df["text"].apply(burstiness)
+    df["f101_diacritics"] = df["text"].apply(diacritic_ratio)
+    return df
+
+
+def split_data(df):
+    train, rest = train_test_split(df, test_size=0.30, stratify=df["label"], random_state=42)
+    val, test = train_test_split(rest, test_size=0.50, stratify=rest["label"], random_state=42)
+    return train, val, test
                                                   
 if __name__ == "__main__":
   ds = load_data()
@@ -136,6 +210,9 @@ if __name__ == "__main__":
   df = add_statistics(df)
   print(get_summary(df).round(3))
   print(top_ngrams(df[df["label"] == 1]["text_no_stopwords"],2,10))
+  df = add_features(df)
+  train, val, test = split_data(df)
+  print("train:", train.shape, "val:", val.shape, "test:", test.shape)
   
 
 
